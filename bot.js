@@ -165,17 +165,14 @@ function gulag(user, guild) {
 
   console.log(`User Nick: ${simpleUser.nickname}\nUser Roles: ${simpleUser.role}\n`);
 
-  user.setNickname(`GulagDetainee#${Math.floor((Math.random() * 9999) + 1)}`);
 
-  simpleUser.role.forEach(function(role) {
-    user.removeRole(role.id);
-  });
 
   asyncForEach(simpleUser.role, async (role) => {
     await waitFor(50);
     user.removeRole(role.id);
   })
 
+  user.setNickname(`GulagDetainee#${Math.floor((Math.random() * 9999) + 1)}`);
   user.addRole(roles.gulag);
 
 
@@ -188,12 +185,14 @@ function ungulag(user) {
   var dataRaw = fs.readFileSync(`${__dirname}/gulagDetainees/${user.id}.json`)
   var simpleUser = JSON.parse(dataRaw);
 
-  user.setNickname(simpleUser.nickname);
 
-  simpleUser.role.forEach(function(role) {
+
+  asyncForEach(simpleUser.role, async (role) => {
+    await waitFor(50);
     user.addRole(role.id);
-  });
+  })
 
+  user.setNickname(simpleUser.nickname);
   user.removeRole(roles.gulag);
 
 }
