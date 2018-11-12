@@ -1,6 +1,5 @@
 // Import the discord.js module
 const Discord = require('discord.js');
-const js = require('jsonfile');
 const fs = require('fs');
 
 const auth = require('./auth.json');
@@ -9,14 +8,18 @@ const roles = require('./roles.json');
 // Create an instance of a Discord client
 const client = new Discord.Client();
 
-
-
+const waitFor = (ms) => new Promise(r => setTimeout(r, ms));
 /**
  * The ready event is vital, it means that only _after_ this will your bot start reacting to information
  * received from Discord
  */
 client.on('ready', () => {
   console.log('I am ready!');
+});
+
+client.on("guildMemberAdd", (member) => {
+  member.addRole(roles.cub);
+  member.setNickname(member.displayName + '.Bear');
 });
 
 // Create an event listener for messages
@@ -101,7 +104,7 @@ client.on('message', message => {
             question: args[1],
             timeout: 3600000, //1 hour
             answers: [],
-            fillAnswers: function () {
+            fillAnswers: function() {
               for (var i = 2; i < args.length; i++) {
                 this.answers.push(args[i]);
               }
@@ -122,50 +125,93 @@ client.on('message', message => {
         }
         break;
 
-
-
-      /*
       case 'gulag':
 
-        var user = {
-          nickname: message.member.displayName,
-          roles: message.member.roles.array()
+        if (message.member.roles.has(roles.grizzlyBear)) {
+          gulag(memberParse(args[1], message.guild));
+        } else {
+          gulag(message.member, message.guild);
         }
-        user.roles.shift(); //Removes @everyone
-
-        var userString = JSON.stringify(user);
-        fs.writeFile(`${message.author}.json`, userString, 'utf8', function(err) {
-          if (err) throw err;
-          console.log('complete');
-        });
-
-        console.log(`User Nick: ${user.nickname}\nUser Roles: ${user.roles}\n`);
-        message.delete();
-
-        message.member.setNickname(`GulagDetainee#${Math.floor((Math.random() * 9999) + 1)}`);
-
-        setTimeout(function() {
-
-          message.member.setNickname(user.nickname);
-
-        }, 10000);
-
         break;
-        */
-    }
 
-    /*
-      var Attachment = message.attachments.array();
-      const channel = member.guild.channels.find(ch => ch.name === 'images');
-        Attachment.forEach(function (attachment){
-
-          console.log(message.attachments[attachment].url);
-
-        })
-    */
+      case 'pardon':
+        if (message.member.roles.has(roles.grizzlyBear)) {
+          ungulag(memberParse(args[1], message.guild));
+        }
+        break;
 
   }
+}
 });
 
 // Log our bot in using the token from https://discordapp.com/developers/applications/me
 client.login(auth.token);
+
+function gulag(user, guild) {
+
+  var simpleUser = {
+    filename: user.id + '.json',
+    nickname: user.displayName,
+    role: user.roles.array()
+  }
+  simpleUser.role.shift(); //Removes @everyone
+
+  var userString = JSON.stringify(simpleUser, null, 1);
+
+  fs.writeFile(`${__dirname}/gulagDetainees/${user.id}.json`, userString, function(err) {
+    if (err) throw err;
+    console.log(`${simpleUser.nickname} gulag file created.`);
+  });
+
+  console.log(`User Nick: ${simpleUser.nickname}\nUser Roles: ${simpleUser.role}\n`);
+
+  user.setNickname(`GulagDetainee#${Math.floor((Math.random() * 9999) + 1)}`);
+
+  simpleUser.role.forEach(function(role) {
+    user.removeRole(role.id);
+  });
+
+  asyncForEach(simpleUser.role, async (role) => {
+    await waitFor(50);
+    user.removeRole(role.id);
+  })
+
+  user.addRole(roles.gulag);
+
+
+
+}
+
+function ungulag(user) {
+
+
+  var dataRaw = fs.readFileSync(`${__dirname}/gulagDetainees/${user.id}.json`)
+  var simpleUser = JSON.parse(dataRaw);
+
+  user.setNickname(simpleUser.nickname);
+
+  simpleUser.role.forEach(function(role) {
+    user.addRole(role.id);
+  });
+
+  user.removeRole(roles.gulag);
+
+}
+
+function idParse(id) {
+
+  return id.substring(id.indexOf('!') + 1, id.indexOf('>'));
+
+}
+
+function memberParse(id, guild) {
+
+  return guild.members.get(idParse(id));
+
+}
+
+async function asyncForEach(array, callback) {
+  for (let index = 0; index < array.length; index++) {
+    await callback(array[index], index, array);
+  }
+}
