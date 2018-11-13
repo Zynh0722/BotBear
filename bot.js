@@ -190,7 +190,7 @@ function ungulag(user) {
   asyncForEach(simpleUser.role, async (role) => {
     await waitFor(50);
     user.addRole(role.id);
-  })
+  });
 
   user.setNickname(simpleUser.nickname);
   user.removeRole(roles.gulag);
