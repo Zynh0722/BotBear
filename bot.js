@@ -185,7 +185,7 @@ client.on('message', message => {
               timestamp: new Date()
               }});
             message.delete();
-            
+
         }
         break;
 
@@ -230,6 +230,7 @@ client.on('message', message => {
 
         break;
 
+      /*                // Saving for future poll development
       case 'poll':
         if (message.member.roles.has(roles.grizzlyBear)) {
           var poll = {
@@ -257,6 +258,7 @@ client.on('message', message => {
         }
 
         break;
+      */
 
       case 'gulag':
 
