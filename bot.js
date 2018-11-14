@@ -98,33 +98,6 @@ client.on('message', message => {
 
         break;
 
-      case 'poll':
-        if (message.member.roles.has(roles.grizzlyBear)) {
-          var poll = {
-            question: args[1],
-            timeout: 3600000, //1 hour
-            answers: [],
-            fillAnswers: function() {
-              for (var i = 2; i < args.length; i++) {
-                this.answers.push(args[i]);
-              }
-            }
-          }
-
-          poll.fillAnswers();
-
-          var pollOut = `${poll.question}\n\n`;
-
-          for (var i = 0; i < poll.answers.length; i++) {
-            pollOut += `\t${poll.answers[i]}\n`;
-          }
-
-          message.channel.send(pollOut);
-
-          message.delete();
-        }
-        break;
-
       case 'gulag':
 
         if (message.member.roles.has(roles.grizzlyBear)) {
