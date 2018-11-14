@@ -9,6 +9,7 @@ const roles = require('./roles.json');
 const client = new Discord.Client();
 
 const waitFor = (ms) => new Promise(r => setTimeout(r, ms));
+
 /**
  * The ready event is vital, it means that only _after_ this will your bot start reacting to information
  * received from Discord
@@ -39,21 +40,152 @@ client.on('message', message => {
             message.channel.send('@everyone ' + message.author + ' wants to play Fallout 76');
             message.delete();
             break;
+          case 'wow':
+            message.channel.send(`  <@&${roles.wowNerd}> `  + message.author + ' wants to play World of Warcraft');
+            message.delete();
+            break;
           default:
             message.channel.send('Invalid game: ' + args[1]);
             message.delete();
         }
         break;
+
       case 'help':
         switch (args[1]) {
           case 'call':
-            message.channel.send('```\nCommand: call <game>\n\ncall r6 - Mentions the server to play R6S\ncall 76 - Mentions the server to play Fallout 76\n```');
+            message.channel.send({ embed: {
+              title: "Call Command:",
+              color: 16766745,
+              footer: {
+                icon_url: client.user.avatarURL,
+                text: "Use !help <command> learn about a command"
+              },
+              author: {
+                name: client.user.username,
+                icon_url: client.user.avatarURL
+              },
+              fields: [
+                {
+                  name: "!call r6",
+                  value: " - Calls users to Rainbow Six: Siege"
+                },
+                {
+                  name: "!call 76",
+                  value: " - Calls users to Fallout 76"
+                },
+                {
+                  name: "!call wow",
+                  value: " - Calls wow nerds to World of Warcraft"
+                }
+              ],
+              timestamp: new Date()
+              }});
             message.delete();
             break;
 
-          default:
-            message.channel.send('```\nPrefix: !\nUse !help <command> to learn more about a command\n\nCommands:\n\tcall <game>\n```');
+            case 'roulette':
+              message.channel.send({ embed: {
+                title: "Roulette Command:",
+                color: 16766745,
+                footer: {
+                  icon_url: client.user.avatarURL,
+                  text: "Use !help <command> learn about a command"
+                },
+                author: {
+                  name: client.user.username,
+                  icon_url: client.user.avatarURL
+                },
+                fields: [
+                  {
+                    name: "!roulette",
+                    value: " - Test your luck and pull the trigger (game)"
+                  }
+              ],
+              timestamp: new Date()
+              }});
+              message.delete();
+              break;
+
+          case 'gulag':
+            message.channel.send({ embed: {
+              title: "Gulag Command:",
+              color: 16766745,
+              footer: {
+                icon_url: client.user.avatarURL,
+                text: "Use !help <command> learn about a command"
+              },
+              author: {
+                name: client.user.username,
+                icon_url: client.user.avatarURL
+              },
+              fields: [
+                {
+                  name: "!gulag <@user>",
+                  value: " - Removes and stores a users roles, and nickname, as well as applying 'gulag-ed' rank (Admin Only)"
+                }
+            ],
+            timestamp: new Date()
+            }});
             message.delete();
+          break;
+
+          case 'pardon':
+            message.channel.send({ embed: {
+              title: "Pardon Command:",
+              color: 16766745,
+              footer: {
+                icon_url: client.user.avatarURL,
+                text: "Use !help <command> learn about a command"
+              },
+              author: {
+                name: client.user.username,
+                icon_url: client.user.avatarURL
+              },
+              fields: [
+                {
+                  name: "!pardon <@user>",
+                  value: " - Restores a 'gulag-ed' users roles and nickname (Admin Only)"
+                }
+            ],
+            timestamp: new Date()
+            }});
+            message.delete();
+          break;
+
+          default:
+            message.channel.send({ embed: {
+              title: "Bot.Bear Commands:",
+              color: 16766745,
+              footer: {
+                icon_url: client.user.avatarURL,
+                text: "Use !help <command> learn about a command"
+              },
+              author: {
+                name: client.user.username,
+                icon_url: client.user.avatarURL
+              },
+              fields: [
+                {
+                  name: "!call <game>",
+                  value: " - Mentions the server to play a game and tags you"
+                },
+                {
+                  name: "!roulette",
+                  value: " - Try your luck"
+                },
+                {
+                  name: "!gulag <@user>",
+                  value: " - Lazy ban (Admin Only)"
+                },
+                {
+                  name: "!pardon <@user>",
+                  value: " - Returns a gulaged user to their former glory (Admin Only)"
+                }
+              ],
+              timestamp: new Date()
+              }});
+            message.delete();
+            
         }
         break;
 
@@ -123,7 +255,7 @@ client.on('message', message => {
 
           message.delete();
         }
-        
+
         break;
 
       case 'gulag':
