@@ -33,19 +33,30 @@ client.on('message', message => {
       case 'call':
         switch (args[1]) {
           case 'r6':
-            message.channel.send('@everyone ' + message.author + ' wants to play Rainbow Six');
+            message.channel.send(`<@&${roles.r6}> ${message.author} wants to play Rainbow Six`);
             message.delete();
             break;
           case '76':
-            message.channel.send('@everyone ' + message.author + ' wants to play Fallout 76');
+            message.channel.send(`<@&${roles.f76}> ${message.author} wants to play Fallout 76`);
             message.delete();
             break;
           case 'wow':
-            message.channel.send(`  <@&${roles.wowNerd}> `  + message.author + ' wants to play World of Warcraft');
+            message.channel.send(`<@&${roles.wowNerd}> ${message.author} wants to play World of Warcraft1`);
+            message.delete();
+            break;
+          case undefined:
+            message.channel.send(`Actually give me a game dumbass`);
             message.delete();
             break;
           default:
-            message.channel.send('Invalid game: ' + args[1]);
+            var out = 'Invalid game: ';
+            args.forEach(function(it) {
+              if (it != 'call') {
+                out += it + ' ';
+              }
+            });
+            message.channel.send(out);
+            console.log(`Invalid game: ${args[1]}`);
             message.delete();
         }
         break;
@@ -275,12 +286,35 @@ client.on('message', message => {
         }
         break;
 
+      case 'test':
+        saveTime();
+        message.delete();
+        break;
+
   }
 }
 });
 
 // Log our bot in using the token from https://discordapp.com/developers/applications/me
 client.login(auth.token);
+
+
+function saveTime() {
+
+  var dateOBJ = new Date();
+  var date = {
+    time: dateOBJ.getTime()
+  }
+  var dateString = JSON.stringify(date, null, 1);
+
+  fs.writeFile(`${__dirname}/files/lastFileSave.json`, dateString, function(err) {
+    if (err) throw err;
+    console.log(`Saved Time`);
+  });
+
+  console.log(client.uptime);
+  console.log(date.time);
+}
 
 function gulag(user, guild) {
 
