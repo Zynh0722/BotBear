@@ -27,7 +27,11 @@ client.on("guildMemberAdd", (member) => {
 client.on('message', message => {
   if (message.content.substring(0, 1) == '!') {
     var args = message.content.substring(1).split(' ');
-    var cmd = args[0].toLowerCase();
+    for(var i = 0; i < args.length; i++) {
+      args[i] = args[i].toLowerCase();
+    }
+    var cmd = args[0];
+    console.log(args[0] + " " + args[1])
 
     switch (cmd) {
       case 'call':
@@ -36,12 +40,18 @@ client.on('message', message => {
             message.channel.send(`<@&${roles.r6}> ${message.author} wants to play Rainbow Six`);
             message.delete();
             break;
+          case 'valorant':
+          case 'val':
+          case 'v':
+            message.channel.send(`<@&${roles.val}> ${message.author} wants to play Valorant`);
+            message.delete();
+            break;
           case '76':
             message.channel.send(`<@&${roles.f76}> ${message.author} wants to play Fallout 76`);
             message.delete();
             break;
           case 'wow':
-            message.channel.send(`<@&${roles.wowNerd}> ${message.author} wants to play World of Warcraft1`);
+            message.channel.send(`<@&${roles.wowNerd}> ${message.author} wants to play World of Warcraft`);
             message.delete();
             break;
           case undefined:
@@ -87,6 +97,10 @@ client.on('message', message => {
                 {
                   name: "!call wow",
                   value: " - Calls wow nerds to World of Warcraft"
+                },
+                {
+                  name: "!call valorant \\| val \\| v",
+                  value: " - calls users to Valorant"
                 }
               ],
               timestamp: new Date()
